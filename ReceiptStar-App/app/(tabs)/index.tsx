@@ -1,4 +1,4 @@
-import "./firebaseConfig";
+import "../../src/firebaseConfig";
 import { Image } from 'expo-image';
 import { Platform, StyleSheet } from 'react-native';
 
