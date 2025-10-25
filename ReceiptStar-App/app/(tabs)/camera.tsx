@@ -10,7 +10,7 @@ import { Link } from 'expo-router';
 export default function CameraScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#c64c91ff', dark: '#7a658fff' }}
       headerImage={
         <Image
           source={require('@/assets/images/partial-react-logo.png')}

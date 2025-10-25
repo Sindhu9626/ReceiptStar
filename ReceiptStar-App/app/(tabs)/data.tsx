@@ -18,18 +18,18 @@ const STAR_POS = [
 ];
 
 export default function LoadingWelcomeScreen() {
-  const rocketX = useRef(new Animated.Value(-100)).current; // start off-screen left
+  const rocketX = useRef(new Animated.ValueXY({x:0, y: height - 100})).current; // start off-screen left
 
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(rocketX, {
-          toValue: 400, // move right across screen
+          toValue: {x: width - 100, y: 0}, // move right across screen
           duration: 4000,
           useNativeDriver: true,
         }),
         Animated.timing(rocketX, {
-          toValue: -100, // reset back left
+          toValue: {x:0, y: height - 100}, // reset back left
           duration: 0,
           useNativeDriver: true,
         }),
@@ -40,7 +40,7 @@ export default function LoadingWelcomeScreen() {
   return (
      <View style={styles.container}>
       <Animated.Image
-        source={require("../../assets/appImages/rocket.png")}
+        source={require("../../assets/appImages/rocketIMG.png")}
         style={[styles.rocket, { transform: [{ translateX: rocketX }] }]}
       />
     
