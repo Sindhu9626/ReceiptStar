@@ -4,7 +4,7 @@
     "slug": "ReceiptStar-App",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/appImages/cameraIMG.png",
     "scheme": "receiptstarapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

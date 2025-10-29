@@ -1,88 +1,112 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, Dimensions, Image, StyleSheet, View } from "react-native";
+import { Image } from 'expo-image';
+import { Platform, StyleSheet } from 'react-native';
 
+import { ExternalLink } from '@/components/external-link';
+import ParallaxScrollView from '@/components/parallax-scroll-view';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { Collapsible } from '@/components/ui/collapsible';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Fonts } from '@/constants/theme';
 
-const { width, height} = Dimensions.get("window");
-
-const PURPLE = "#A78BFA"
-const STAR_SIZE = 34;
-
-const STAR_POS = [
-  { x: 0.12, y: 0.18 }, { x: 0.25, y: 0.30 }, { x: 0.38, y: 0.16 },
-  { x: 0.52, y: 0.24 }, { x: 0.68, y: 0.18 }, { x: 0.82, y: 0.30 },
-  { x: 0.15, y: 0.52 }, { x: 0.30, y: 0.44 }, { x: 0.45, y: 0.50 },
-  { x: 0.60, y: 0.42 }, { x: 0.75, y: 0.52 }, { x: 0.88, y: 0.46 },
-  { x: 0.20, y: 0.70 }, { x: 0.34, y: 0.78 }, { x: 0.50, y: 0.72 },
-  { x: 0.66, y: 0.78 }, { x: 0.78, y: 0.68 }, { x: 0.90, y: 0.74 },
-  { x: 0.34, y: 0.63 }, { x: 0.42, y: 0.31 }, 
-];
-
-export default function LoadingWelcomeScreen() {
-  const rocketX = useRef(new Animated.ValueXY({x:0, y: height - 100})).current; // start off-screen left
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(rocketX, {
-          toValue: {x: width - 100, y: 0}, // move right across screen
-          duration: 4000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(rocketX, {
-          toValue: {x:0, y: height - 100}, // reset back left
-          duration: 0,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [rocketX]);
-
+export default function TabTwoScreen() {
   return (
-     <View style={styles.container}>
-      <Animated.Image
-        source={require("../../assets/appImages/rocketIMG.png")}
-        style={[styles.rocket, { transform: [{ translateX: rocketX }] }]}
-      />
-    
-      {STAR_POS.map(({ x, y }, i) => (
-        <Image
-          key={i}
-          source={require("../../assets/appImages/star_nbg_IMG.png")}
-          style={[
-            styles.star,
-            {
-              // place by percentage of screen
-              left: x * width - STAR_SIZE / 2,
-              top: y * height - STAR_SIZE / 2,
-              width: STAR_SIZE,
-              height: STAR_SIZE,
-            },
-          ]}
-          resizeMode="contain"
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerImage={
+        <IconSymbol
+          size={310}
+          color="#808080"
+          name="chevron.left.forwardslash.chevron.right"
+          style={styles.headerImage}
         />
-      ))}
-    </View>
-
-    
-      
+      }>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText
+          type="title"
+          style={{
+            fontFamily: Fonts.rounded,
+          }}>
+          Explore
+        </ThemedText>
+      </ThemedView>
+      <ThemedText>This app includes example code to help you get started.</ThemedText>
+      <Collapsible title="File-based routing">
+        <ThemedText>
+          This app has two screens:{' '}
+          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
+          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
+        </ThemedText>
+        <ThemedText>
+          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
+          sets up the tab navigator.
+        </ThemedText>
+        <ExternalLink href="https://docs.expo.dev/router/introduction">
+          <ThemedText type="link">Learn more</ThemedText>
+        </ExternalLink>
+      </Collapsible>
+      <Collapsible title="Android, iOS, and web support">
+        <ThemedText>
+          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
+          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+        </ThemedText>
+      </Collapsible>
+      <Collapsible title="Images">
+        <ThemedText>
+          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
+          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
+          different screen densities
+        </ThemedText>
+        <Image
+          source={require('@/assets/images/react-logo.png')}
+          style={{ width: 100, height: 100, alignSelf: 'center' }}
+        />
+        <ExternalLink href="https://reactnative.dev/docs/images">
+          <ThemedText type="link">Learn more</ThemedText>
+        </ExternalLink>
+      </Collapsible>
+      <Collapsible title="Light and dark mode components">
+        <ThemedText>
+          This template has light and dark mode support. The{' '}
+          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
+          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
+        </ThemedText>
+        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
+          <ThemedText type="link">Learn more</ThemedText>
+        </ExternalLink>
+      </Collapsible>
+      <Collapsible title="Animations">
+        <ThemedText>
+          This template includes an example of an animated component. The{' '}
+          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
+          the powerful{' '}
+          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
+            react-native-reanimated
+          </ThemedText>{' '}
+          library to create a waving hand animation.
+        </ThemedText>
+        {Platform.select({
+          ios: (
+            <ThemedText>
+              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
+              component provides a parallax effect for the header image.
+            </ThemedText>
+          ),
+        })}
+      </Collapsible>
+    </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: PURPLE,
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
+    position: 'absolute',
   },
-  star: {
-    position: "absolute",
+  titleContainer: {
+    flexDirection: 'row',
+    gap: 8,
   },
-  rocket: {
-    width: 80,
-    height: 80,
-    resizeMode: "contain",
-    position: "absolute",
-    top: 100,
-  },
-  
 });
-
