@@ -1,17 +1,19 @@
 import "../../src/firebaseConfig";
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { View, Text, Platform, StyleSheet } from 'react-native';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
+
 
 export default function HomeScreen() {
   return (
+    
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#215cbaff', dark: '#c518dcff' }}
       headerImage={
         <Image
           source={require('@/assets/images/partial-react-logo.png')}
@@ -76,6 +78,7 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
     </ParallaxScrollView>
+    
   );
 }
 
