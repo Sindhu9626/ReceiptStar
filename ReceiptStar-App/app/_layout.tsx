@@ -13,12 +13,12 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false, animation: "fade", }}>
+      {/* first screen (redirected to from app/index) */}
+      <Stack.Screen name="loadingWelcome" />
+      {/* your tabs group */}
+      <Stack.Screen name="(tabs)" />
+    </Stack>
+    
   );
 }
