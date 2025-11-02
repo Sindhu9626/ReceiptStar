@@ -12,20 +12,22 @@ export default function LoginScreen() {
     try {
       await signUp(email, password);
       Alert.alert("Success", "Account created!");
+      router.navigate('./(tabs)');
     } catch (error: any) {
       Alert.alert("Signup Error", error.message);
     }
-    router.navigate('./(tabs)');
+    
   };
 
   const handleLogin = async () => {
     try {
       await logIn(email, password);
       Alert.alert("Success", "Logged in!");
+      router.navigate('./(tabs)');
     } catch (error: any) {
       Alert.alert("Login Error", error.message);
     }
-     router.navigate('./(tabs)');
+     
   };
 
   return (
