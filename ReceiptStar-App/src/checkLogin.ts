@@ -14,7 +14,6 @@ export async function checkCurrentUser() {
         return true;
     }
     else {
-        console.log("null user");
         return false;
     }
 }
