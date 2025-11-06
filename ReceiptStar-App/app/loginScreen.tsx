@@ -1,37 +1,35 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { logIn, signUp } from "../../src/authService";
+import { logIn, signUp } from "../src/authService";
 
-export default function SignupScreen() {
+export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-
   const handleSignup = async () => {
-      try {
-        await signUp(email, password);
-        Alert.alert("Success", "Account created!");
-      } catch (error: any) {
-        Alert.alert("Signup Error", error.message);
-      }
-    };
+    try {
+      await signUp(email, password);
+      Alert.alert("Success", "Account created!");
+    } catch (error: any) {
+      Alert.alert("Signup Error", error.message);
+    }
+  };
 
-    const handleLogin = async () => {
-        try {
-          await logIn(email, password);
-          Alert.alert("Success", "Logged in!");
-        } catch (error: any) {
-          Alert.alert("Login Error", error.message);
-        }
-      };
-
+  const handleLogin = async () => {
+    try {
+      await logIn(email, password);
+      Alert.alert("Success", "Logged in!");
+    } catch (error: any) {
+      Alert.alert("Login Error", error.message);
+    }
+  };
 
   return (
     <View style={ styles.container }>
       
       <View style={styles.header}>
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Enter the following information</Text>
+        <Text style={styles.title}>Welcome Back!</Text>
+        <Text style={styles.subtitle}>Sign in to continue</Text>
       </View>
 
       <View style={styles.form}>
@@ -54,14 +52,14 @@ export default function SignupScreen() {
           onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleSignup}>
-          <Text style={styles.buttonText}>SIGN UP</Text>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>LOGIN</Text>
         </TouchableOpacity>
 
-        <View style={styles.loginContainer}>
-          <Text style={styles.loginText}>Already have an account? </Text>
-          <TouchableOpacity onPress={handleLogin}> 
-            <Text style={styles.loginLink}>Login</Text>
+        <View style={styles.signupContainer}>
+          <Text style={styles.signupText}>Don't have an account? </Text>
+          <TouchableOpacity onPress={handleSignup}> 
+            <Text style={styles.signupLink}>Sign Up</Text>
           </TouchableOpacity>
         </View>
 
@@ -118,15 +116,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-  loginContainer: {
+  signupContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
   },
-  loginText: {
+  signupText: {
     color: '#666',
   },
-  loginLink: {
+  signupLink: {
     color: '#4F46E5',
     fontWeight: '600',
   },
