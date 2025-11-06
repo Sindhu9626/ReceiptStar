@@ -38,7 +38,7 @@ export default function LoadingWelcomeScreen() {
            // decide where to go based on if user is logged in
            // route to either login or tabs after load screen
           if(userStatus == true) {
-            router.replace("/(tabs)/camera");
+            router.replace("/(tabs)");
             }
             else {
             router.replace("/loginScreen");
