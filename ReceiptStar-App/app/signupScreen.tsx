@@ -1,6 +1,7 @@
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { logIn, signUp } from "../src/authService";
+import { signUp } from "../src/authService";
 
 export default function SignupScreen() {
   const [email, setEmail] = useState("");
@@ -15,15 +16,6 @@ export default function SignupScreen() {
         Alert.alert("Signup Error", error.message);
       }
     };
-
-    const handleLogin = async () => {
-        try {
-          await logIn(email, password);
-          Alert.alert("Success", "Logged in!");
-        } catch (error: any) {
-          Alert.alert("Login Error", error.message);
-        }
-      };
 
 
   return (
@@ -60,7 +52,7 @@ export default function SignupScreen() {
 
         <View style={styles.loginContainer}>
           <Text style={styles.loginText}>Already have an account? </Text>
-          <TouchableOpacity onPress={handleLogin}> 
+          <TouchableOpacity onPress={() => router.navigate('/loginScreen')}> 
             <Text style={styles.loginLink}>Login</Text>
           </TouchableOpacity>
         </View>
