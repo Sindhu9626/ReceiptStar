@@ -1,21 +1,37 @@
-import { StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { logIn, signUp } from "../src/authService";
 
-export default function LoginScreen() {
+export default function SignupScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  {/*
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    console.log('Logging in with:', email, password);
-  };
+  const handleSignup = async () => {
+      try {
+        await signUp(email, password);
+        Alert.alert("Success", "Account created!");
+      } catch (error: any) {
+        Alert.alert("Signup Error", error.message);
+      }
+    };
+
+    const handleLogin = async () => {
+        try {
+          await logIn(email, password);
+          Alert.alert("Success", "Logged in!");
+        } catch (error: any) {
+          Alert.alert("Login Error", error.message);
+        }
+      };
+
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={ styles.container }>
+      
       <View style={styles.header}>
-        <Text style={styles.title}>Welcome Back!</Text>
-        <Text style={styles.subtitle}>Sign in to continue</Text>
+        <Text style={styles.title}>Create Account</Text>
+        <Text style={styles.subtitle}>Enter the following information</Text>
       </View>
 
       <View style={styles.form}>
@@ -38,21 +54,23 @@ export default function LoginScreen() {
           onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>LOGIN</Text>
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+          <Text style={styles.buttonText}>SIGN UP</Text>
         </TouchableOpacity>
 
-        <View style={styles.signupContainer}>
-          <Text style={styles.signupText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => router.push('/signup')}>
-            <Text style={styles.signupLink}>Create a new account</Text>
+        <View style={styles.loginContainer}>
+          <Text style={styles.loginText}>Already have an account? </Text>
+          <TouchableOpacity onPress={handleLogin}> 
+            <Text style={styles.loginLink}>Login</Text>
           </TouchableOpacity>
         </View>
+
       </View>
-    </SafeAreaView>
+
+    </View>
   );
-  */}
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -60,17 +78,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    backgroundColor: '#4F46E5', 
-    paddingVertical: 60,
+    backgroundColor: '#A78BFA', 
+    paddingVertical: 130,
     alignItems: 'center',
   },
   title: {
     color: '#fff',
-    fontSize: 28,
+    fontSize: 34,
     fontWeight: 'bold',
   },
   subtitle: {
     color: 'rgba(255,255,255,0.8)',
+    fontSize: 16,
     marginTop: 4,
   },
   form: {
@@ -89,7 +108,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   button: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#A78BFA',
     padding: 14,
     borderRadius: 12,
     alignItems: 'center',
@@ -99,18 +118,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-  signupContainer: {
+  loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
   },
-  signupText: {
+  loginText: {
     color: '#666',
   },
-  signupLink: {
+  loginLink: {
     color: '#4F46E5',
     fontWeight: '600',
   },
-
-
 });
+
