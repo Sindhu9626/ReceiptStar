@@ -2,6 +2,8 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { signUp } from "../src/authService";
+import { createUserDoc } from "../src/dbService";
+import { auth } from "../src/firebaseConfig";
 
 export default function SignupScreen() {
   const [email, setEmail] = useState("");
@@ -11,6 +13,11 @@ export default function SignupScreen() {
   const handleSignup = async () => {
       try {
         await signUp(email, password);
+        await auth.authStateReady();
+        const user = auth.currentUser;
+        if (user != null && user.email != null) {
+            createUserDoc(user.uid, user.email);
+        }
         Alert.alert("Success", "Account created!");
       } catch (error: any) {
         Alert.alert("Signup Error", error.message);
