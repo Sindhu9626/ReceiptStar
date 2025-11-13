@@ -1,5 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Image } from 'react-native';
+
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -32,17 +34,23 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="profile"
-        options={{
-        title: 'Profile',
-        tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
-        }}
-      />
-
-      <Tabs.Screen
         name="camera"
         options={{
         title: 'Camera',
+        //tabBarIcon: ({ color }) => <IconSymbol size={28} name="camera.fill" color={color} />,
+        tabBarIcon: ({ focused }) => (
+                <Image
+                  source={focused ? require('../../assets/appImages/cameraIMG-rbg.png') : require('../../assets/appImages/cameraIMG-rbg.png')}
+                  style={{ width: 80, height: 80 }} // Adjust size as needed
+                />
+              ),
+        }}
+      />
+
+       <Tabs.Screen
+        name="profile"
+        options={{
+        title: 'Profile',
         tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
         }}
       />

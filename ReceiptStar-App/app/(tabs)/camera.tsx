@@ -1,98 +1,97 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, Button, Alert } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { CameraView, useCameraPermissions } from "expo-camera";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// Set this based on where you run the app:
+// iOS Simulator: "http://localhost:8080/ocr"
+// Android Emulator: "http://10.0.2.2:8080/ocr"
+// Real device on same Wi-Fi: "http://10.132.231.8:8080/ocr"
+const OCR_URL = "http://10.132.231.8:8080/ocr";
 
-export default function CameraScreen() {
+export default function ReceiptScanScreen() {
+  const [ocrResult, setOcrResult] = React.useState(""); 
+  const camRef = React.useRef<CameraView>(null);
+  const [perm, requestPerm] = useCameraPermissions();
+
+  React.useEffect(() => {
+    if (!perm?.granted) requestPerm();
+  }, [perm]);
+
+  /*
+  async function pickAndOcr() {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission required", "Please allow photo library access.");
+        return;
+      }
+      const img = await ImagePicker.launchImageLibraryAsync({ base64: true, quality: 1 });
+      if (img.canceled) return;
+
+      const base64 = img.assets?.[0]?.base64;
+      if (!base64) return Alert.alert("No image", "Could not read image data.");
+
+      const resp = await fetch(OCR_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64 }),
+      });
+      const data = await resp.json();
+  
+      if (!resp.ok) throw new Error(data?.error || "OCR failed");
+      setOcrResult(data.text ?? "(no text)");
+    } catch (e: any) {
+      Alert.alert("Error", e?.message ?? String(e));
+    }
+  }
+  */
+
+  async function scanWithCamera() {
+    try {
+      if (!camRef.current) return Alert.alert("Camera not ready");
+      // capture photo with base64 to send to backend
+      const photo = await camRef.current.takePictureAsync({ base64: true, quality: 1 });
+      console.log("photo base64 length:", photo?.base64?.length);
+      if (!photo?.base64) return Alert.alert("Capture failed");
+
+      const resp = await fetch(OCR_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: photo.base64 }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data?.error || "OCR failed");
+      setOcrResult(JSON.stringify(data, null, 2));
+    } catch (e: any) {
+      Alert.alert("OCR error", e?.message ?? String(e));
+    }
+  }
+
+  if (!perm) return <View style={{ flex: 1 }} />;
+  if (!perm.granted) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text>Camera permission is required.</Text>
+        <Button title="Grant permission" onPress={requestPerm} />
+      </View>
+    );
+  }
+
+  //<Button title="Select Receipt" onPress={pickAndOcr} />
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#c64c91ff', dark: '#7a658fff' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <View style={{ flex: 1 }}>
+      {/* Camera preview */}
+      <CameraView ref={camRef} style={{ flex: 1 }} facing="back" />
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      {/* Actions */}
+      <View style={{ padding: 16, gap: 12 }}>
+        <Button title="Scan with Camera" onPress={scanWithCamera} />
+         
+        <Text style={{ marginTop: 12 }} selectable>
+          {ocrResult}
+        </Text>
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
