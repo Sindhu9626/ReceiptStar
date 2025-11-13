@@ -105,10 +105,10 @@ app.post("/ocr", async (req, res) => {
     });
 
     const full = result.fullTextAnnotation?.text || "";
-    res.json(parseBasic(full));
+    res.json(parseReceipt(full));
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: "OCR failed" });
+    res.status(500).json({ error: e.message || "OCR failed" });
   }
 });
 

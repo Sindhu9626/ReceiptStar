@@ -1,14 +1,249 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { View, Text, TextInput, FlatList, ActivityIndicator, Pressable, Keyboard, Platform, } from "react-native";
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+//Setting up reciept structure
+type Receipt = {
+  id: string;
+  vendor: string;
+  total: number;
+  date: string;        
+  previewText?: string;
+};
 
+//mock receupts
+const MOCK_RECEIPTS: Receipt[] = [
+  { id: "r1", vendor: "Target", total: 24.39, date: "2025-09-01T13:02:11Z", previewText: "Milk, bread, paper towels" },
+  { id: "r2", vendor: "Costco", total: 112.07, date: "2025-08-21T10:15:00Z", previewText: "Rotisserie chicken, rice, batteries" },
+  { id: "r3", vendor: "Starbucks", total: 6.58, date: "2025-10-02T08:44:12Z", previewText: "Latte, banana bread" },
+  { id: "r4", vendor: "Publix", total: 48.92, date: "2025-07-12T17:30:00Z", previewText: "Apples, eggs, cheese" },
+  { id: "r5", vendor: "Best Buy", total: 219.99, date: "2025-09-29T14:10:00Z", previewText: "USB-C hub, HDMI cable" },
+  { id: "r6", vendor: "Chipotle", total: 12.85, date: "2025-10-15T12:20:00Z", previewText: "Chicken bowl, chips" },
+];
+
+
+const DEBOUNCE_MS = 300;
+const FAKE_DELAY_MS = 450; 
+const MIN_QUERY_LEN = 1;
+const HIGHLIGHT_MATCHES = true;
+
+export default function ExploreSearch() {
+
+  const [query, setQuery] = useState("");
+
+  const debouncedQuery = useDebounce(query, DEBOUNCE_MS);
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<Receipt[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  
+  useEffect(() => {
+    setError(null);
+
+    // Reset for short or empty queries
+    if (!debouncedQuery.trim() || debouncedQuery.trim().length < MIN_QUERY_LEN) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+
+    const t = setTimeout(() => {
+      if (cancelled) return;
+
+      try {
+        const q = normalize(debouncedQuery);
+        // Simple contains match on vendor + previewText
+        const filtered = MOCK_RECEIPTS.filter(r => {
+          const hay = `${r.vendor} ${r.previewText ?? ""}`;
+          return normalize(hay).includes(q);
+        });
+        setResults(filtered);
+      } catch (e: any) {
+        setError("Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    }, FAKE_DELAY_MS);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [debouncedQuery]);
+
+  const header = (
+    <View style={{ padding: 12, paddingTop: 60 }}>
+      <TextInput
+        value={query}
+        onChangeText={setQuery}
+        placeholder="Search receipts"
+        autoCapitalize="none"
+        autoCorrect={false}
+        returnKeyType="search"
+        onSubmitEditing={() => Keyboard.dismiss()}
+        style={{
+          borderWidth: 1,
+          borderColor: "#a86ae7ff",
+          borderRadius: 12,
+          paddingHorizontal: 14,
+          paddingVertical: 14,
+          backgroundColor: "#cbaae3ff",
+          fontSize: 16,
+        }}
+      />
+      <View style={{ height: 8 }} />
+      
+    </View>
+  );
+
+  const bodyState = (() => {
+    if (!query.trim() || query.trim().length < MIN_QUERY_LEN) {
+      return <View style={{ height: 0 }} />;
+    }
+    if (loading) {
+      return (
+        <Centered>
+          <ActivityIndicator />
+          <View style={{ height: 8 }} />
+          <Text style={{ color: "#bd97f2ff" }}>Searching…</Text>
+        </Centered>
+      );
+    }
+    if (error) {
+      return (
+        <Centered>
+          <Text style={{ color: "#B00020" }}>{error}</Text>
+          <View style={{ height: 10 }} />
+          <Pressable onPress={() => setQuery(q => q + " ")}>
+            <Text style={{ color: "#2563EB", fontWeight: "600" }}>Try again</Text>
+          </Pressable>
+        </Centered>
+      );
+    }
+    if (results.length === 0) {
+      return (
+        <Centered>
+          <Text style={{ color: "#6B7280" }}>No matches found.</Text>
+          <View style={{ height: 6 }} />
+        </Centered>
+      );
+    }
+    return null;
+  })();
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#F8FAFC" }}>
+      <FlatList
+        data={results}
+        keyExtractor={(r) => r.id}
+        ListHeaderComponent={header}
+        ListEmptyComponent={bodyState}
+        contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 24 }}
+        keyboardShouldPersistTaps="handled"
+        renderItem={({ item }) => (
+          <ReceiptCard
+            receipt={item}
+            query={debouncedQuery}
+            highlight={HIGHLIGHT_MATCHES}
+            onPress={() => {
+            }}
+          />
+        )}
+        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+      />
+    </View>
+  );
+}
+
+// recipet card set up
+function ReceiptCard({
+  receipt,
+  query,
+  highlight,
+  onPress,
+}: {
+  receipt: Receipt;
+  query: string;
+  highlight: boolean;
+  onPress?: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={{
+        backgroundColor: "#FFFFFF",
+        borderRadius: 14,
+        padding: 14,
+        borderWidth: 1,
+        borderColor: "#E5E7EB",
+        shadowColor: "#000",
+        shadowOpacity: 0.05,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 6,
+        elevation: 1,
+      }}
+    >
+      <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 2 }}>
+        <Text style={{ fontWeight: "700", fontSize: 16 }}>{receipt.vendor}</Text>
+        <Text style={{ fontWeight: "600" }}>${receipt.total.toFixed(2)}</Text>
+      </View>
+      <Text style={{ color: "#6B7280", marginBottom: 6 }}>
+        {new Date(receipt.date).toLocaleDateString()}
+      </Text>
+
+      {receipt.previewText ? (
+        <Text numberOfLines={2} style={{ color: "#374151" }}>
+          {highlight ? highlightText(receipt.previewText, query) : receipt.previewText}
+        </Text>
+      ) : null}
+    </Pressable>
+  );
+}
+
+function Centered({ children }: { children: React.ReactNode }) {
+  return (
+    <View style={{ alignItems: "center", justifyContent: "center", paddingTop: 40 }}>
+      {children}
+    </View>
+  );
+}
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [v, setV] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setV(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return v;
+}
+
+function normalize(s: string) {
+  return s.normalize("NFKC").toLowerCase().trim();
+}
+
+function highlightText(text: string, rawQuery: string) {
+  const q = normalize(rawQuery);
+  if (!q) return text;
+
+  const i = normalize(text).indexOf(q);
+  if (i === -1) return text;
+
+  const before = text.slice(0, i);
+  const match = text.slice(i, i + rawQuery.length);
+  const after = text.slice(i + rawQuery.length);
+
+  return (
+    <>
+      {before}
+      <Text style={{ fontWeight: "700" }}>{match}</Text>
+      {after}
+    </>
+  );
+}
+
+/*
 export default function TabTwoScreen() {
   return (
     <ParallaxScrollView
@@ -110,3 +345,4 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 });
+*/

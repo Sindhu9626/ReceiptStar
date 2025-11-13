@@ -7,7 +7,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 // iOS Simulator: "http://localhost:8080/ocr"
 // Android Emulator: "http://10.0.2.2:8080/ocr"
 // Real device on same Wi-Fi: "http://10.132.231.8:8080/ocr"
-const OCR_URL = "http://10.132.231.8:8080/ocr";
+const OCR_URL = "http://10.132.231.10:8080/ocr";
 
 export default function ReceiptScanScreen() {
   const [ocrResult, setOcrResult] = React.useState(""); 
