@@ -1,6 +1,9 @@
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Animated, Dimensions, Image, StyleSheet, View } from "react-native";
-import { useRouter } from "expo-router";
+import { checkCurrentUser } from '../src/checkLogin';
+
+
 
 const { width, height} = Dimensions.get("window");
 
@@ -22,14 +25,25 @@ export default function LoadingWelcomeScreen() {
   const router = useRouter();
   const rocketXY = useRef(new Animated.ValueXY({x:0, y: Dimensions.get('window').height})).current; 
 
+ 
+  
+
   useEffect(() => {
         Animated.timing(rocketXY, {
             toValue: { x: Dimensions.get('window').width, y: 0 }, // Top-right corner
             duration: 3000, // Animation duration in milliseconds
             useNativeDriver: false, // Set to true if animating non-layout properties
-        }).start(()=>{
-
-          router.replace("/(tabs)");
+        }).start(async ()=>{
+          const userStatus = await checkCurrentUser();
+           // decide where to go based on if user is logged in
+           // route to either login or tabs after load screen
+          if(userStatus == true) {
+            router.replace("/(tabs)");
+            }
+            else {
+            router.replace("/loginScreen");
+            }
+          
 
         });
     }, [rocketXY]);
