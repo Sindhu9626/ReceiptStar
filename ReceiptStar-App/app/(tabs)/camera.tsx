@@ -1,13 +1,12 @@
-import React from "react";
-import { View, Text, Button, Alert } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import React from "react";
+import { Alert, Button, Text, View } from "react-native";
 
 // Set this based on where you run the app:
 // iOS Simulator: "http://localhost:8080/ocr"
 // Android Emulator: "http://10.0.2.2:8080/ocr"
 // Real device on same Wi-Fi: "http://10.132.231.8:8080/ocr"
-const OCR_URL = "http://10.132.231.10:8080/ocr";
+const OCR_URL = "http://172.20.10.12:8080/ocr";
 
 export default function ReceiptScanScreen() {
   const [ocrResult, setOcrResult] = React.useState(""); 
@@ -60,8 +59,11 @@ export default function ReceiptScanScreen() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageBase64: photo.base64 }),
       });
+      /*const txt = await resp.text();
+      console.log(txt);*/
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.error || "OCR failed");
+      Alert.alert("Capture taken");
       setOcrResult(JSON.stringify(data, null, 2));
     } catch (e: any) {
       Alert.alert("OCR error", e?.message ?? String(e));
