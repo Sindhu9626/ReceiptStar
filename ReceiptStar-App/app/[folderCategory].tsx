@@ -1,12 +1,19 @@
-import { useLocalSearchParams } from 'expo-router';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+
 export default function ReceiptFolderScreen() {
     const {folderCategory} = useLocalSearchParams();
+    const router = useRouter();
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Receipts</Text>
-                <Text style={styles.subtitle}>{folderCategory} folder</Text>
+              <Pressable onPress={() => router.back()}>
+                <Image style = {styles.backButton} source={require('../assets/appImages/backButton.png')}/>
+              </Pressable>
+              <View style={styles.headerText}>
+                  <Text style={styles.title}>Receipts</Text>
+                  <Text style={styles.subtitle}>{folderCategory} folder</Text>
+                </View>
             </View>
         </View>
     );
@@ -22,7 +29,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#A78BFA", 
     paddingTop: 70, 
     paddingBottom: 30, 
-    alignItems: "center" 
+  },
+
+  headerText: {
+    alignItems: "center",
   },
 
   subtitle: {
@@ -35,7 +45,7 @@ const styles = StyleSheet.create({
   title: { 
     color: "#fff", 
     fontSize: 34, 
-    fontWeight: "bold" 
+    fontWeight: "bold" ,
   },
 
   contentContainer: { 
@@ -47,5 +57,13 @@ const styles = StyleSheet.create({
     fontWeight: "600", 
     color: "#333", 
     marginBottom: 10 
+  },
+
+  backButton: {
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    marginLeft: 20,
+    height: 30,
+    width: 30
   },
 });
