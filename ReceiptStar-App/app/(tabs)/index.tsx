@@ -1,9 +1,13 @@
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from "expo-router";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import "../../src/firebaseConfig";
 
 
-
 export default function HomeScreen() {
+  const router = useRouter();
+  const onPress = () => {
+    router.push("../groceries");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -13,22 +17,22 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <Text style={styles.sectionTitle}>Receipts</Text>
         <View style={styles.receiptFolders}>
-          <View style={styles.folderContainer}>
+          <TouchableOpacity style={styles.folderContainer}  onPress={() => router.push("../groceries")}>
             <Image style={styles.folder} source={require('../../assets/appImages/violet_folder.png')}/>
             <Text style={styles.folderTitle}>Groceries</Text>
-          </View>
-          <View style={styles.folderContainer}>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("../gas")} style={styles.folderContainer}>
             <Image style={styles.folder} source={require('../../assets/appImages/violet_folder.png')}/>
             <Text style={styles.folderTitle}>Gas</Text>
-          </View>
-          <View style={styles.folderContainer}>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("../entertainment")} style={styles.folderContainer}>
             <Image style={styles.folder} source={require('../../assets/appImages/violet_folder.png')}/>
             <Text style={styles.folderTitle}>Entertainment</Text>
-          </View>
-          <View style={styles.folderContainer}>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("../miscellaneous")} style={styles.folderContainer}>
             <Image style={styles.folder} source={require('../../assets/appImages/violet_folder.png')}/>
             <Text style={styles.folderTitle}>Miscellaneous</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
