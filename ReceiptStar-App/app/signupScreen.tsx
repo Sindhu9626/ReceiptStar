@@ -19,6 +19,7 @@ export default function SignupScreen() {
             createUserDoc(user.uid, user.email);
         }
         Alert.alert("Success", "Account created!");
+        router.navigate("./(tabs)");
       } catch (error: any) {
         Alert.alert("Signup Error", error.message);
       }
