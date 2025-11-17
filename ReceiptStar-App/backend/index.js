@@ -1,20 +1,9 @@
 import { ImageAnnotatorClient } from "@google-cloud/vision";
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
 import path from "path";
-
-const keyPath = path.resolve(process.cwd(), "receipt-ocr-app.json")
-
-console.log("using key file:", keyPath);
-/*
-dotenv.config({
-  path: path.resolve(process.cwd(), ".env"),
-});
-
-console.log("Loaded .env from:", path.resolve(process.cwd(), ".env"));
-console.log("GAC from env:", process.env.GOOGLE_APPLICATIONS_CREDENTIALS);
-*/
+import "dotenv/config";
+import fs from "fs";
 
 const app = express();
 app.use(cors());
@@ -22,9 +11,10 @@ app.use(express.json({ limit: "15mb" })); // accept base64 images
 
 // Auth comes from GOOGLE_APPLICATION_CREDENTIALS env var
 const vision = new ImageAnnotatorClient({
-  keyFilename: keyPath,
-  //keyFilename: process.env.GOOGLE_APPLICATIONS_CREDENTIALS,
+  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
 });
+
+console.log("Loaded GAC:", process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 const MONEY = /(?<!\w)[\$€£]?\s*\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})(?!\w)/;
 const MONEY_G = new RegExp(MONEY, "g");
