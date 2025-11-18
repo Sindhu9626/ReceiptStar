@@ -2,6 +2,10 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { logIn } from "../src/authService";
+import { insertMockReceipts } from "../src/createMockReceipts";
+import { auth } from "../src/firebaseConfig";
+
+
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -12,6 +16,12 @@ export default function LoginScreen() {
     try {
       await logIn(email, password);
       Alert.alert("Success", "Logged in!");
+
+      const user = auth.currentUser;
+      if (user) {
+        await insertMockReceipts(user.uid);
+      }
+
       router.navigate("./(tabs)");
     } catch (error: any) {
       Alert.alert("Login Error", error.message);
