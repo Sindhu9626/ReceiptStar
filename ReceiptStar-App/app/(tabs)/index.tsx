@@ -1,13 +1,12 @@
+import { LineItem } from "@/src/types/items";
 import { useRouter } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import "../../src/firebaseConfig";
+import { createReceipt } from "@/src/dbService";
 
 
 export default function HomeScreen() {
   const router = useRouter();
-  const onPress = () => {
-    router.push("../groceries");
-  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
