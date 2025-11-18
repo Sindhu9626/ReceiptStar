@@ -17,3 +17,16 @@ export async function checkCurrentUser() {
         return false;
     }
 }
+
+// returns current user ID or throws an error if no user logged in
+export async function getCurrentUserID() {
+    await auth.authStateReady();
+    const user = auth.currentUser;
+    if (user !== null) {    
+        const uid = user.uid;
+        return uid;
+    }
+    else {
+        throw new Error("No user signed in");
+    }
+}
