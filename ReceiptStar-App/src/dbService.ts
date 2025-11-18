@@ -1,6 +1,8 @@
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc, query, where, getDocs } from "firebase/firestore";
 import { db } from './firebaseConfig';
-import { LineItem } from "./types/items";
+import { LineItem, ReceiptData } from "./types/items";
+import { getCurrentUserID } from "./checkLogin";
+import { use } from "react";
 
 // user doc used to store profile info and link receipts collection to
 export async function createUserDoc(newUserID:string, newUserEmail:string) {
@@ -38,4 +40,18 @@ export async function createReceipt(storeName:String, category:String, total:num
     catch (e) {
         console.error("Error adding receipt: ", e);
     }
+}
+
+export async function getReceiptsByCategory(category:string) {
+    const userID: string = await getCurrentUserID();
+    const userDoc = doc(db, "Users", userID);
+    const receiptCollection = collection(userDoc, "Receipts");
+    const catQuery = query(receiptCollection, where ("category", "==", category));
+    const catSnapshot = await getDocs(catQuery);
+    const receipts: ReceiptData[] = [];
+    catSnapshot.forEach((receipt) => {
+        receipts.push(receipt.data() as ReceiptData);
+    });
+
+    return receipts;
 }
