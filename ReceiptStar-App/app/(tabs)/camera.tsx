@@ -2,6 +2,9 @@ import React from "react";
 import { View, Text, Button, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { getCurrentUserId } from "../../src/getID";
+import { parseReceipt } from "../../src/parseReceipt";
+
 
 // Set this based on where you run the app:
 // iOS Simulator: "http://localhost:8080/ocr"
@@ -60,9 +63,22 @@ export default function ReceiptScanScreen() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageBase64: photo.base64 }),
       });
+
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.error || "OCR failed");
+
+
       setOcrResult(JSON.stringify(data, null, 2));
+
+      const userID = await getCurrentUserId();
+
+      if(!userID){
+        Alert.alert("Not logged in", "Please log in to save receipts.");
+        return;
+      }
+
+      await parseReceipt(data, userID, "Uncategorized");
+      Alert.alert("Sucess", "Receipt saved!");
     } catch (e: any) {
       Alert.alert("OCR error", e?.message ?? String(e));
     }

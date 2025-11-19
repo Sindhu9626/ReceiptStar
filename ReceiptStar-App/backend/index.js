@@ -140,6 +140,7 @@ function totals(text) {
 
   return { subtotal, tax, total };
 }
+
 function itemLines(text) {
   const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
 
