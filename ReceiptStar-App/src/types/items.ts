@@ -4,7 +4,7 @@ export interface LineItem {
 }
 
 export interface ReceiptData {
-    total: string;
-    items: LineItem[];
-    store: string;
+    Total: number;
+    Items: LineItem[];
+    Store: string;
 }

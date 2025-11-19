@@ -1,14 +1,14 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { ReceiptData } from '@/src/types/items';
 
-export default function ReceiptSummary({store, total, items}:ReceiptData) {
+export default function ReceiptSummary({Store, Total, Items}:ReceiptData) {
     return (
         <Pressable>
             <Text>
-                {store}
+                {Store}
             </Text>
             <Text>
-                ${total}
+                ${Total}
             </Text>
         </Pressable>
     )
