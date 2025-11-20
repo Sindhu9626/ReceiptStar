@@ -1,8 +1,6 @@
-import { LineItem } from "@/src/types/items";
 import { useRouter } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import "../../src/firebaseConfig";
-import { createReceipt } from "@/src/dbService";
 
 
 export default function HomeScreen() {
@@ -16,19 +14,19 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <Text style={styles.sectionTitle}>Receipts</Text>
         <View style={styles.receiptFolders}>
-          <TouchableOpacity style={styles.folderContainer}  onPress={() => router.push("../groceries")}>
+          <TouchableOpacity style={styles.folderContainer}  onPress={() => router.push("../Groceries")}>
             <Image style={styles.folder} source={require('../../assets/appImages/violet_folder.png')}/>
             <Text style={styles.folderTitle}>Groceries</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("../gas")} style={styles.folderContainer}>
+          <TouchableOpacity onPress={() => router.push("../Gas")} style={styles.folderContainer}>
             <Image style={styles.folder} source={require('../../assets/appImages/violet_folder.png')}/>
             <Text style={styles.folderTitle}>Gas</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("../entertainment")} style={styles.folderContainer}>
+          <TouchableOpacity onPress={() => router.push("../Entertainment")} style={styles.folderContainer}>
             <Image style={styles.folder} source={require('../../assets/appImages/violet_folder.png')}/>
             <Text style={styles.folderTitle}>Entertainment</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("../miscellaneous")} style={styles.folderContainer}>
+          <TouchableOpacity onPress={() => router.push("../Miscellaneous")} style={styles.folderContainer}>
             <Image style={styles.folder} source={require('../../assets/appImages/violet_folder.png')}/>
             <Text style={styles.folderTitle}>Miscellaneous</Text>
           </TouchableOpacity>
