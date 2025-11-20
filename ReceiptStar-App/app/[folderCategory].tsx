@@ -35,7 +35,7 @@ export default function ReceiptFolderScreen() {
             <View>
               {
                 receipts.map((receipt, index) => (
-                    <ReceiptSummary key={index} Store={receipt.Store} Total={receipt.Total} Items={receipt.Items}/>
+                    <ReceiptSummary key={index} receipt={receipt}/>
                 ))
               }
             </View>
