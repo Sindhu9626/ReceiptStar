@@ -1,0 +1,18 @@
+{
+  "merchant": "20.11.25 12:04:04",
+  "date": "20.11.25",
+  "address": "UNKNOWN",
+  "currency": "UNKOWN",
+  "subtotal": "UNKNOWN",
+  "tax": "UNKNOWN",
+  "total": 20.11,
+  "items": [
+    {
+      "name": ".25 12:04:04",
+      "qty": 1,
+      "unitPrice": null,
+      "lineTotal": 20.11
+    }
+  ],
+  "rawText": "20.11.25 12:04:04"
+}
