@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc, where, getDocs, query, orderBy } from "firebase/firestore";
 import { getCurrentUserID } from "./checkLogin";
 import { db } from './firebaseConfig';
 import { LineItem, ReceiptData } from "./types/items";
@@ -38,6 +38,34 @@ export async function createReceipt(storeName:String, category:String, total:num
     }
     catch (e) {
         console.error("Error adding receipt: ", e);
+    }
+}
+
+export async function getReceipts(userID: string){
+    const userDoc = doc(db, "Users", userID);
+    const receiptCollection = collection(userDoc, "Receipts");
+
+    const q = query(receiptCollection, orderBy("Date", "desc"));
+
+    try{
+        const snapshot = await getDocs(q);
+
+        const receipts = snapshot.docs.map((d) => {
+            const data = d.data() as any;
+            return {
+                id: d.id,
+                Store: data.Store,
+                Category: data.Category,
+                Total: data.Total,
+                Items: data.Items,
+                Date: data.Date,
+            };
+        });
+
+        return receipts;
+    } catch (e){
+        console.error("Error getting receipts: ", e);
+        return [];
     }
 }
 
