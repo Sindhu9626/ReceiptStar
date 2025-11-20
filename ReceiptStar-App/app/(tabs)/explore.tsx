@@ -1,5 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, TextInput, FlatList, ActivityIndicator, Pressable, Keyboard, Platform, } from "react-native";
+import { getReceipts } from "@/src/dbService";
+import { getCurrentUserId } from "@/src/getID";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Keyboard, Pressable, Text, TextInput, View } from "react-native";
+
 
 //Setting up reciept structure
 type Receipt = {
@@ -9,7 +12,7 @@ type Receipt = {
   date: string;        
   previewText?: string;
 };
-
+/*
 //mock receupts
 const MOCK_RECEIPTS: Receipt[] = [
   { id: "r1", vendor: "Target", total: 24.39, date: "2025-09-01T13:02:11Z", previewText: "Milk, bread, paper towels" },
@@ -19,6 +22,8 @@ const MOCK_RECEIPTS: Receipt[] = [
   { id: "r5", vendor: "Best Buy", total: 219.99, date: "2025-09-29T14:10:00Z", previewText: "USB-C hub, HDMI cable" },
   { id: "r6", vendor: "Chipotle", total: 12.85, date: "2025-10-15T12:20:00Z", previewText: "Chicken bowl, chips" },
 ];
+*/
+
 
 
 const DEBOUNCE_MS = 300;
@@ -35,7 +40,57 @@ export default function ExploreSearch() {
   const [results, setResults] = useState<Receipt[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  
+  const[allReceipts, setAllReceipts] = useState<Receipt[]>([]);
+    useEffect(() => {
+    async function loadReceipts() {
+      try {
+        const userID = await getCurrentUserId();
+        if (!userID) {
+          console.log("User not logged in");
+          // optional: setError("Please log in to see receipts.");
+          return;
+        }
+
+        const rawReceipts: any[] = await getReceipts(userID);
+
+        // Map Firestore shape -> Explore Receipt shape
+        const mapped: Receipt[] = rawReceipts.map((r) => {
+          // r should have: id, Store, Category, Total, Items, Date
+          const dateIso =
+            r.Date && r.Date.toDate
+              ? r.Date.toDate().toISOString()
+              : new Date().toISOString();
+
+          
+          let preview: string | undefined = undefined;
+          if (Array.isArray(r.Items) && r.Items.length > 0) {
+             const names = r.Items
+              .map((it: any) => (it && typeof it.item === "string" ? it.item : ""));
+
+            if (names.length > 0) {
+              preview = names.join(", "); 
+            }
+          }
+
+          return {
+            id: r.id,
+            vendor: r.Store ?? "Unknown Merchant",
+            total: typeof r.Total === "number" ? r.Total : 0,
+            date: dateIso,
+            previewText: preview,
+          };
+        });
+
+        setAllReceipts(mapped);
+      } catch (e) {
+        console.error("Error loading receipts in Explore:", e);
+        setError("Could not load receipts.");
+      }
+    }
+
+    loadReceipts();
+  }, []);
+
   useEffect(() => {
     setError(null);
 
@@ -55,7 +110,7 @@ export default function ExploreSearch() {
       try {
         const q = normalize(debouncedQuery);
         // Simple contains match on vendor + previewText
-        const filtered = MOCK_RECEIPTS.filter(r => {
+        const filtered = allReceipts.filter(r => {
           const hay = `${r.vendor} ${r.previewText ?? ""}`;
           return normalize(hay).includes(q);
         });
@@ -71,7 +126,7 @@ export default function ExploreSearch() {
       cancelled = true;
       clearTimeout(t);
     };
-  }, [debouncedQuery]);
+  }, [debouncedQuery, allReceipts]);
 
   const header = (
     <View style={{ padding: 12, paddingTop: 60 }}>
@@ -85,11 +140,11 @@ export default function ExploreSearch() {
         onSubmitEditing={() => Keyboard.dismiss()}
         style={{
           borderWidth: 1,
-          borderColor: "#a86ae7ff",
+          borderColor: "#A78BFA",
           borderRadius: 12,
           paddingHorizontal: 14,
           paddingVertical: 14,
-          backgroundColor: "#cbaae3ff",
+          backgroundColor: "#b6a0f9ff",
           fontSize: 16,
         }}
       />
@@ -117,7 +172,7 @@ export default function ExploreSearch() {
           <Text style={{ color: "#B00020" }}>{error}</Text>
           <View style={{ height: 10 }} />
           <Pressable onPress={() => setQuery(q => q + " ")}>
-            <Text style={{ color: "#2563EB", fontWeight: "600" }}>Try again</Text>
+            <Text style={{ color: "#fb7272ff", fontWeight: "600" }}>Try again</Text>
           </Pressable>
         </Centered>
       );
@@ -194,7 +249,7 @@ function ReceiptCard({
       </Text>
 
       {receipt.previewText ? (
-        <Text numberOfLines={2} style={{ color: "#374151" }}>
+        <Text style={{ color: "#374151" }}>
           {highlight ? highlightText(receipt.previewText, query) : receipt.previewText}
         </Text>
       ) : null}

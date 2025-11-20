@@ -1,9 +1,9 @@
 import { LineItem } from './types/items'
 import { createReceipt } from './dbService';
-import fs from "fs"
+
 
 export type ParsedForDb = {
-    storeName: string;
+    store: string;
     total: number;
     items: LineItem[];
 }
@@ -11,7 +11,6 @@ export type ParsedForDb = {
 export async function parseReceipt(rawReceipt: any, userID: string, category: string = "Uncategorized"): Promise<ParsedForDb> {
     
 
-    try {
        // const filePath = '../receipt_data.json';
         //const jsonReceipt = fs.readFileSync(filePath, 'utf8');
         const receiptData = rawReceipt || {}; //JSON.parse(jsonReceipt);
@@ -53,10 +52,6 @@ export async function parseReceipt(rawReceipt: any, userID: string, category: st
         await createReceipt(store, category, total, checkedItems, userID);
 
         return{store, total, items: checkedItems};
-
-        } catch (error) {
-        console.error('Error reading file:', error);
-    }
     
 
 
