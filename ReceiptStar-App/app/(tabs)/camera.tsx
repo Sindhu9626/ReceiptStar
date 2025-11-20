@@ -3,6 +3,8 @@ import { getCurrentUserId } from "../../src/getID";
 import { parseReceipt } from "../../src/parseReceipt";
 import { TouchableOpacity } from "react-native";
 import { router } from "expo-router";
+import React from 'react';
+import { View, Text, Button, Alert } from "react-native";
 
 // Set this based on where you run the app:
 // iOS Simulator: "http://localhost:8080/ocr"
