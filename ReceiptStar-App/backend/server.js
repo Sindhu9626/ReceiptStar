@@ -1,5 +1,6 @@
 import { ImageAnnotatorClient } from "@google-cloud/vision";
 import cors from "cors";
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import "dotenv/config";
@@ -8,6 +9,10 @@ import fs from "fs";
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "15mb" })); // accept base64 images
+
+app.get("/", (req, res) => {
+  res.send("Backend is running!");
+});
 
 // Auth comes from GOOGLE_APPLICATION_CREDENTIALS env var
 const vision = new ImageAnnotatorClient({
@@ -204,6 +209,7 @@ function parseReceipt(text) {
 app.post("/ocr", async (req, res) => {
   try {
     const { imageBase64 } = req.body || {};
+    //console.log("Base64 size (bytes):", Buffer.byteLength(req.body.base64, "base64"));
     if (!imageBase64) return res.status(400).json({ error: "imageBase64 required" });
 
     const [result] = await vision.annotateImage({
@@ -213,6 +219,12 @@ app.post("/ocr", async (req, res) => {
     });
 
     const full = result.fullTextAnnotation?.text || "";
+    
+    const filePath = '../receipt_data.json';
+    const parsedReceipt = parseReceipt(full);
+    const jsonString = JSON.stringify(parsedReceipt, null, 2);
+    fs.writeFileSync(filePath, jsonString, 'utf8');
+    
     res.json(parseReceipt(full));
 
   } catch (e) {

@@ -1,6 +1,3 @@
-import React from "react";
-import { View, Text, Button, Alert } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { getCurrentUserId } from "../../src/getID";
 import { parseReceipt } from "../../src/parseReceipt";
